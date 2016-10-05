@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Little Planet - WebGL Editor</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+  <style>
+  body, html{min-height: 100%; height: 100%;}
+  .full-height{height: 100%;}
+  </style>
+
+</head>
+<body>
+
+
+  <div class="container-fluid full-height">
+
+    <div class="row full-height">
+      <div class="col-md-2 full-height">
+
+        <div class="container">
+          <br/>
+          <h1 class="display-4">Tools</h1>
+          <p class="lead">
+            Personalize your little planet here.
+          </p>
+          <hr/>
+
+          <h4>General</h4>
+
+          <div class="form-group">
+            <label for="exampleSelect1">Background Universe</label>
+            <select class="form-control" id="exampleSelect1">
+              <option>Lightroom</option>
+              <option>Galaxy</option>
+              <option>All Black</option>
+              <option>Grandma's house</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="exampleSelect1">General Planet Ambiance</label>
+            <select class="form-control" id="exampleSelect1">
+              <option>Earth Like</option>
+              <option>Desert</option>
+              <option>Oceanic</option>
+              <option>Forest</option>
+            </select>
+          </div>
+
+          <h4>Planet Shape</h4>
+
+          <div class="form-group">
+            <label for="planet-radius">Radius</label>
+            <input class="form-control" type="range" style="border:none">
+          </div>
+
+          <div class="form-group">
+            <label for="planet-lod">Level of Details</label>
+            <input class="form-control" type="range" style="border:none">
+          </div>
+
+          <h4>Planet Life</h4>
+
+          <div class="form-group">
+            <label for="planet-lod">Mountains</label>
+            <input class="form-control" type="range" style="border:none">
+          </div>
+
+          <div class="form-group">
+            <label for="planet-lod">Water</label>
+            <input class="form-control" type="range" style="border:none">
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+      <div class="col-md-10 full-height" style="background-color: #f8f8f8">
+
+        <!-- Canvas will be there -->
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+
+
+</body>
+</html>
