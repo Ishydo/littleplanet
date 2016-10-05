@@ -16,6 +16,8 @@
 </head>
 <body>
 
+<!-- Water is linked with grass ! Grass is a certain height more than the water. Water is not totally opaque. -->
+<!-- Could do lowpoly mountains + grass and spheric water for a contrasted effect. -->
 
   <div class="container-fluid full-height">
 
@@ -33,49 +35,66 @@
           <h4>General</h4>
 
           <div class="form-group">
-            <label for="exampleSelect1">Background Universe</label>
-            <select class="form-control" id="exampleSelect1">
-              <option>Lightroom</option>
-              <option>Galaxy</option>
-              <option>All Black</option>
-              <option>Grandma's house</option>
+            <label for="universe">Background Universe</label>
+            <select class="form-control" id="universe" onchange="updateDebugInfos()">
+              <option value="0">Lightroom</option>
+              <option value="1">Galaxy</option>
+              <option value="2">All Black</option>
+              <option value="3">Blue Sky</option>
+              <option value="4">Grandma's house</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="exampleSelect1">General Planet Ambiance</label>
-            <select class="form-control" id="exampleSelect1">
-              <option>Earth Like</option>
-              <option>Desert</option>
-              <option>Oceanic</option>
-              <option>Forest</option>
+            <label for="ambiance">General Planet Ambiance</label>
+            <select class="form-control" id="ambiance" onchange="updateDebugInfos()">
+              <option value="0">Earth Like</option>
+              <option value="1">Desert</option>
+              <option value="3">Oceanic</option>
+              <option value="4">Forest</option>
             </select>
           </div>
 
           <h4>Planet Shape</h4>
 
           <div class="form-group">
-            <label for="planet-radius">Radius</label>
-            <input class="form-control" type="range" style="border:none">
+            <label for="general-radius">Radius</label>
+            <input class="form-control" type="range" style="border:none" id="general-radius">
           </div>
 
           <div class="form-group">
-            <label for="planet-lod">Level of Details</label>
-            <input class="form-control" type="range" style="border:none">
+            <label for="poly-precision">Level of Details</label>
+            <input class="form-control" type="range" style="border:none" id="poly-precision">
           </div>
 
           <h4>Planet Life</h4>
 
           <div class="form-group">
-            <label for="planet-lod">Mountains</label>
-            <input class="form-control" type="range" style="border:none">
+            <label for="mountain-size">Mountains</label>
+            <input class="form-control" type="range" style="border:none" id="mountain-size">
           </div>
 
           <div class="form-group">
-            <label for="planet-lod">Water</label>
-            <input class="form-control" type="range" style="border:none">
+            <label for="water-size">Water</label>
+            <input class="form-control" type="range" style="border:none" id="water-size">
           </div>
 
+          <div class="form-group">
+            <label for="trees-concentration">Trees</label>
+            <input class="form-control" type="range" style="border:none" id="trees-concentration">
+          </div>
+
+          <h4>More</h4>
+
+          <div class="form-group">
+            <label for="atmosphere-radius">Atmosphere</label>
+            <input class="form-control" type="range" style="border:none" id="atmosphere-radius">
+          </div>
+
+          <div class="form-group">
+            <label for="clouds-concentration">Clouds</label>
+            <input class="form-control" type="range" style="border:none" id="clouds-concentration">
+          </div>
 
 
         </div>
@@ -84,11 +103,39 @@
 
       <div class="col-md-10 full-height" style="background-color: #f8f8f8">
 
+        <div class="row">
+          <div class="container-fluid" style="background: black; padding: 20px;">
+            <p id="debug-infos" style="color: white">
+              Debug
+            </p>
+          </div>
+        </div>
+
         <!-- Canvas will be there -->
+        
 
       </div>
     </div>
   </div>
+
+
+  <script>
+
+    function updateDebugInfos(){
+
+        var universeReference = ["Lightroom", "Galaxy", "All Black", "Blue Sky", "Grandma's Sky"];
+        var ambianceReference = ["Earth Like", "Desert", "Oceanic", "Forest", "Random"];
+
+        var universeID = document.getElementById('universe').value;
+        var ambianceID = document.getElementById('ambiance').value;
+
+        console.log(universeReference[universeID]);
+        console.log(ambianceReference[ambianceID]);
+
+        document.getElementById('debug-infos').innerHTML = "> Universe : " + universeReference[universeID]
+    }
+
+  </script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
