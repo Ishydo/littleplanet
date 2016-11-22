@@ -9,7 +9,6 @@ var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 
 
-
 function initShaderParameters(prg) {
     prg.vertexPositionAttribute = glContext.getAttribLocation(prg, "aVertexPosition");
     glContext.enableVertexAttribArray(prg.vertexPositionAttribute);
