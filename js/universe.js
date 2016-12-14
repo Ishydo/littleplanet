@@ -1,28 +1,30 @@
-/**
-* scene.js - This class handles the whole scene. It contains the initialisation of the gl context, the objects displayed, handles the js interactions on the page and draws the scene
-*/
 
-//Creation of 2 global matrix for the model view (mvMatrix) and for the projection (pMatrix)
+// Les deux matrices pour le model view et la projection
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 
-//Creation of a global array to store the objectfs drawn in the scene
+// Le tableau qui contient les objets de la scène
 var sceneObjects = [];
-//Creation of a global array to store the orbits between planets
-var orbits = [];
 
-// Fonction de changement de subdivisions
-function changeSubdivision(value){
-	// Ici on change pour tous les objets, on pourrait ne changer que pour la terra
-	for(var i = 0;i<sceneObjects.length;i++)
-	{
-		sceneObjects[i].subdivision = value;
-	}
+//Creation of a global array to store the orbits between planets
+//var orbits = [];
+
+
+// Fonction d'update d'une valeur
+function updateValue(value, index, field){
+	sceneObjects[index][field] = value; // On update la planète (index 0 et sa propriété)
 }
 
-document.getElementById("poly-precision").addEventListener("change", function(){changeSubdivision(this.value)})
+// On bind les changements de formulaire avec la fonction d'update
+// TODO: is it possible to force update each step?
+document.getElementById("poly-precision").addEventListener("change", function(){updateValue(this.value, 0, "subdivision")})
+document.getElementById("general-radius").addEventListener("change", function(){updateValue(this.value, 0, "radius")})
+document.getElementById("water-radius").addEventListener("change", function(){updateValue(this.value, 1, "radius")})
+document.getElementById("atmosphere-radius").addEventListener("change", function(){updateValue(this.value, 2, "radius")})
+
 
 //Projection type handling, the projection variable defines whether the projection should use perspective or be orthogonal
+/*
 var projection = 1;
 function changeProjection(){
 	if(projection)
@@ -38,34 +40,60 @@ function changeProjection(){
 		projection = 1;
 	}
 
-	//Sending the new projection matrix to the shaders
-	glContext.uniformMatrix4fv(prg.pMatrixUniform, false, pMatrix);
+	// Miss line
+
 }
+*/
 
 //Initialisation of the shader parameters, this very important method creates the links between the javascript and the shader.
 function initShaderParameters(prg)
 {
-	//Linking of the attribute "vertex position"
-    prg.vertexPositionAttribute = glContext.getAttribLocation(prg, "aVertexPosition");
+
+	// Lien pour l'attribut des position de vertices aVertexPosition
+  prg.vertexPositionAttribute = glContext.getAttribLocation(prg, "aVertexPosition");
 	glContext.enableVertexAttribArray(prg.vertexPositionAttribute);
-	//Linking of the attribute "color"
-	prg.colorAttribute 			= glContext.getAttribLocation(prg, "aColor");
+
+	// Lien pour l'attribut des couleurs
+	prg.colorAttribute = glContext.getAttribLocation(prg, "aColor");
 	glContext.enableVertexAttribArray(prg.colorAttribute);
-	//Linking of the uniform [mat4] for the projection matrix
-	prg.pMatrixUniform          = glContext.getUniformLocation(prg, 'uPMatrix');
-	//Linking of the uniform [mat4] for the movement matrix
-	prg.mvMatrixUniform         = glContext.getUniformLocation(prg, 'uMVMatrix');
+
+	// Lien pour la matrice de projection uniforme
+	prg.pMatrixUniform = glContext.getUniformLocation(prg, 'uPMatrix');
+
+	// Lien pour la matrice de mouvement uniforme
+	prg.mvMatrixUniform = glContext.getUniformLocation(prg, 'uMVMatrix');
+
+	// Lien pour la matrice normale uniforme
+	prg.nMatrixUniform = glContext.getUniformLocation(prg, 'uNMatrix');
+
+	// Lien pour le radius
+	//prg.radius = glContext.getUniformLocation(prg, 'radius');
+
+
+	// Utilisé pour la rotation
+  //prg.rotation = glContext.getUniformLocation(prg, 'rotation');
+
+	// Utilisé pour l'inclinaison de la terre (slightly move the y axis of the model)
+  //prg.inclination = glContext.getUniformLocation(prg, 'inclination');
+
+	// Utilisé pour le rendu de normale Boolean to enable the normal rendering
+	//prg.normal = glContext.getUniformLocation(prg, 'uBoolNormal');
+
 }
 
 
 //Initialisation of the scene
 function initScene()
 {
-	//Creation of the earth instance
-  var planet = new Planet("Earth", 0.4, {r:0.1,g:1.0,b:0.0}, document.getElementById("poly-precision").value , 0.0, 0.0, -1.5);
+	// Création des objets de la scène
+  var earth = new Planet("Earth", 0.4, {r:0.1,g:1.0,b:0.0}, document.getElementById("poly-precision").value , 0.0, 0.0, -1.5);
+	var water = new Planet("Water", 0.3, {r:0.1,g:0.1,b:1.0}, 2, 0.0, 0.0, -1.5);
+	var atmosphere = new Planet("Atmoshpere", 0.6, {r:1.0,g:1.0,b:1.0}, 2, 0.0, 0.0, -1.5)
 
-	// Ajout de la terre dans les objets de scène
-	sceneObjects.push(planet);
+	// Ajout des éléments dans les objets de scène
+	sceneObjects.push(earth);				// La terre
+	sceneObjects.push(water);				// L'eau
+	sceneObjects.push(atmosphere);	// L'atmosphère
 
 	//Enabling the depth test
 	glContext.enable(glContext.DEPTH_TEST);
@@ -83,7 +111,11 @@ function initScene()
 	glContext.viewport(0, 0, glContext.canvas.width, glContext.canvas.height);
 
 	// Mise à jour de la projection
-	changeProjection();
+	//changeProjection();
+
+	// Envoi de la matrice de projection aux shaders
+	mat4.perspective(pMatrix, degToRad(40), c_width / c_height, 1, 1000.0);
+	glContext.uniformMatrix4fv(prg.pMatrixUniform, false, pMatrix);
 
 	//Starts the renderloop
 	renderLoop();
@@ -116,8 +148,10 @@ function initWebGL()
 {
     //Initilisation on the canvas "webgl-canvas"
     glContext = getGLContext('canvas-universe');
-	//Initialisation of the programme
+
+		// Initialisation du programme
     initProgram();
-	//Initialisation of the scene
+
+		// Initialisation de la scène
     initScene();
 }

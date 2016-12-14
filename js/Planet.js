@@ -3,13 +3,12 @@ class Planet{
 	constructor(name, radius, color, sub, x, y, z)
 	{
 		this.name = name;
-		this.radius = radius;
+		this._radius = radius;
 		this.color = color;
 		//Initialisation of the buffers within the object for the render area
 		this.vertexBuffer = null;
 		this.indexBuffer = null;
 		this.colorBuffer = null;
-
 
 		this.x = x;
 		this.y = y;
@@ -37,6 +36,15 @@ class Planet{
 
 	get subdivision(){
 		return this._subdivision;
+	}
+
+	set radius(val){
+		this._radius = val / 10; // A cause des valeurs d'input qui sont entières
+		this.init();
+	}
+
+	get radius(){
+		return this._radius;
 	}
 
 	//Subdivision function to generate the sphere with an icosahedron
@@ -101,19 +109,13 @@ class Planet{
 		//We define the index "count" at 0
 		this.indexCnt = 0;
 
-
 		//Initialisation of the icosahedron
 		this.initIcosahedron();
-
-		console.log(this.colors);
 
 		//We create the buffers on the GPU
 		this.vertexBuffer = getVertexBufferWithVertices(this.vertices);
 		this.colorBuffer = getVertexBufferWithVertices(this.colors);
 		this.indexBuffer = getIndexBufferWithIndices(this.indices);
-
-
-
 	}
 
 
