@@ -5,6 +5,7 @@ class Planet{
 		this.name = name;
 		this._radius = radius;
 		this.color = color;
+
 		//Initialisation of the buffers within the object for the render area
 		this.vertexBuffer = null;
 		this.indexBuffer = null;
@@ -20,15 +21,12 @@ class Planet{
 		//Creation of a model view matrix specific for the object
 		this.mvMatrix = mat4.create();
 
-
-
 		//Call of the initialisation method
 		this.init();
-
 	}
 
 
-	//Getter/setter for division
+	// Getters & Setters
 	set subdivision(div){
 		this._subdivision = div;
 		this.init();
@@ -55,11 +53,11 @@ class Planet{
 		if (depth == 0) {
 			//We store all the vertices, colors and indexes
 			this.vertices.push( v1[0], v1[1], v1[2] );
-			this.colors.push( this.color.r, this.color.g, this.color.b, 1.0 );
+			this.colors.push( this.color.r, this.color.g, this.color.b, this.color.a );
 			this.vertices.push( v2[0], v2[1], v2[2] );
-			this.colors.push( this.color.r, this.color.g, this.color.b, 1.0 );
+			this.colors.push( this.color.r, this.color.g, this.color.b, this.color.a );
 			this.vertices.push( v3[0], v3[1], v3[2] );
-			this.colors.push( this.color.r, this.color.g, this.color.b, 1.0 );
+			this.colors.push( this.color.r, this.color.g, this.color.b, this.color.a );
 			this.indices.push( this.indexCnt, this.indexCnt+1, this.indexCnt+1, this.indexCnt+2, this.indexCnt+2, this.indexCnt );
 			this.indexCnt += 3;
 		}else{
@@ -210,26 +208,29 @@ class Planet{
 
 
 	//Draw method of the planet object
-	draw(mvMatrix)
+	draw(mvSceneMatrix)
 	{
 		//Resets the local model view matrix
 		mat4.identity(this.mvMatrix);
 		//Translates the mv matrix
 		mat4.translate(this.mvMatrix, this.mvMatrix, vec3.fromValues(this.x, this.y, this.z));
 		//Multiplies the model View matrix of the object with the view matrix of the scene
-		mat4.multiply(this.mvMatrix, this.mvMatrix, mvMatrix);
+		mat4.multiply(this.mvMatrix, this.mvMatrix, mvSceneMatrix); // On retrouve la matrice de scene
 
 		glContext.uniformMatrix4fv(prg.mvMatrixUniform, false, this.mvMatrix);
-		//Transfer of the vertices for the planet
-		glContext.bindBuffer(glContext.ARRAY_BUFFER, this.vertexBuffer);
 
+		// Transfert des vertices pour cette sphère
+		glContext.bindBuffer(glContext.ARRAY_BUFFER, this.vertexBuffer);
 		glContext.vertexAttribPointer(prg.vertexPositionAttribute, 3, glContext.FLOAT, false, 0, 0);
-		//Transfer of the colors for the planet
+
+		// Transfert les couleurs pour cette sphère
 		glContext.bindBuffer(glContext.ARRAY_BUFFER, this.colorBuffer);
 		glContext.vertexAttribPointer(prg.colorAttribute, 4, glContext.FLOAT, false, 0, 0);
-		//Transfer the indexes for the planet
+
+		// Transfert des index pour la sphère
 		glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-		//We draw the icosahedron as lines
+
+		// Dessine l'icosahedron comme lignes
 		glContext.drawElements(glContext.LINES, this.indices.length, glContext.UNSIGNED_SHORT,0);
 
 	}
