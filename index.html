@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Little Planet - WebGL Editor</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+  <style>
+  body, html{min-height: 100%; height: 100%; overflow: hidden;}
+  .full-height{height: 100%;}
+  </style>
+
+</head>
+<body onload="initWebGL()">
+
+  <!-- Water is linked with grass ! Grass is a certain height more than the water. Water is not totally opaque. -->
+  <!-- Could do lowpoly mountains + grass and spheric water for a contrasted effect. -->
+
+  <div class="container-fluid full-height">
+
+    <div class="row full-height">
+      <div class="col-md-2 full-height">
+
+        <div class="container">
+          <br/>
+          <h1 class="display-4">Tools</h1>
+          <p class="lead">
+            Personalize your little planet here.
+          </p>
+          <hr/>
+
+          <h4>General</h4>
+
+          <div class="form-group">
+            <input type="checkbox" id="lighting">Lightning<br>
+          </div>
+
+
+          <div class="form-group">
+            <label for="universe">Background Universe</label>
+            <select class="form-control" id="universe" onchange="updateDebugInfos()">
+              <option value="0">Lightroom</option>
+              <option value="1">Galaxy</option>
+              <option value="2">All Black</option>
+              <option value="3">Blue Sky</option>
+              <option value="4">Grandma's house</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="ambiance">General Planet Ambiance</label>
+            <select class="form-control" id="ambiance" onchange="updateDebugInfos()">
+              <option value="0">Earth Like</option>
+              <option value="1">Desert</option>
+              <option value="3">Oceanic</option>
+              <option value="4">Forest</option>
+            </select>
+          </div>
+
+          <h4>Planet Shape</h4>
+
+          <div class="form-group">
+            <label for="general-radius">Radius</label>
+            <input class="form-control" type="range" style="border:none" min="2" max="8" value="4" step=".1" id="general-radius">
+          </div>
+
+          <div class="form-group">
+            <label for="poly-precision">Level of Details</label>
+            <input class="form-control" type="range" min="1" max="5" value="3" style="border:none" id="poly-precision">
+          </div>
+
+          <h4>Planet Life</h4>
+
+          <div class="form-group">
+            <label for="mountain-size">Mountains</label>
+            <input class="form-control" type="range" style="border:none" id="mountain-size">
+          </div>
+
+          <div class="form-group">
+            <label for="water-size">Water</label>
+            <input class="form-control" type="range" style="border:none" id="water-radius" min="2" max="8" step="0.1" value="3">
+          </div>
+
+          <div class="form-group">
+            <label for="trees-concentration">Trees</label>
+            <input class="form-control" type="range" style="border:none" id="trees-concentration">
+          </div>
+
+          <h4>More</h4>
+
+          <div class="form-group">
+            <label for="atmosphere-radius">Atmosphere</label>
+            <input class="form-control" type="range" style="border:none" id="atmosphere-radius" min="2" max="8" value="5">
+          </div>
+
+          <div class="form-group">
+            <label for="clouds-concentration">Clouds</label>
+            <input class="form-control" type="range" style="border:none" id="clouds-concentration">
+          </div>
+
+
+        </div>
+
+      </div>
+
+      <div class="col-md-10 full-height" id="canvas-zone" style="padding: 0px;">
+        <canvas id="canvas-universe" style="width: auto;"></canvas>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- debug infos is obsolete ! -->
+  <script src="js/gl-matrix-min.js"></script>
+  <script src="js/webGLTools.js"></script>
+  <script src="js/webGLDebug.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/Planet.js"></script>
+
+  <!-- /////////////////\\\\\\\\\\\\\\\\ -->
+  <!-- //////////VERTEX SHADER\\\\\\\\\\ -->
+  <!-- /////////////////\\\\\\\\\\\\\\\\ -->
+  <script id="shader-vs" type="x-shader/x-vertex">
+  attribute vec3 aVertexPosition;
+  attribute vec4 aColor;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+
+  // Ajout de matrice de normales
+  uniform mat3 uNMatrix;
+
+  varying vec4 vColor;
+
+  // Ajout vertex normal pour éclairage
+  attribute vec3 aVertexNormal;
+  uniform vec3 uAmbientColor;
+  uniform vec3 uLightingDirection;
+
+  //uniform vec3 uLightingDirection;
+  uniform vec3 uDirectionalColor;
+
+  // Défini l'utilisation de l'éclairage
+  uniform bool uUseLighting;
+  varying vec3 vLightWeighting;
+
+  void main(void) {
+    vColor = aColor;
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+    if (!uUseLighting) {
+      vLightWeighting = vec3(1.0, 1.0, 1.0);
+    } else {
+      vec3 transformedNormal = uNMatrix * aVertexNormal;
+      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+    }
+  }
+  </script>
+
+  <!-- //////////////////\\\\\\\\\\\\\\\\\ -->
+  <!-- //////////FRAGMENT SHADER\\\\\\\\\\ -->
+  <!-- //////////////////\\\\\\\\\\\\\\\\\ -->
+  <script id="shader-fs" type="x-shader/x-fragment">
+  #ifdef GL_ES
+  precision highp float;
+  #endif
+  varying vec4 vColor;
+  //attribute vec4 aColor;
+  varying vec3 vLightWeighting;
+
+  void main(void) {
+    gl_FragColor = vColor;
+  }
+  </script>
+  <script src="js/universe.js"></script>
+
+
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script> -->
+
+
+</body>
+</html>
