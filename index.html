@@ -12,9 +12,8 @@
   body, html{min-height: 100%; height: 100%; overflow: hidden;}
   .full-height{height: 100%;}
   </style>
-
 </head>
-<body onload="initWebGL()">
+<body>
 
   <!-- Water is linked with grass ! Grass is a certain height more than the water. Water is not totally opaque. -->
   <!-- Could do lowpoly mountains + grass and spheric water for a contrasted effect. -->
@@ -33,11 +32,6 @@
           <hr/>
 
           <h4>General</h4>
-
-          <div class="form-group">
-            <input type="checkbox" id="lighting">Lightning<br>
-          </div>
-
 
           <div class="form-group">
             <label for="universe">Background Universe</label>
@@ -64,12 +58,12 @@
 
           <div class="form-group">
             <label for="general-radius">Radius</label>
-            <input class="form-control" type="range" style="border:none" min="2" max="8" value="4" step=".1" id="general-radius">
+            <input class="form-control" type="range" style="border:none" min="0.1" max="1" value="0.3" step=".1" id="general-radius">
           </div>
 
           <div class="form-group">
             <label for="poly-precision">Level of Details</label>
-            <input class="form-control" type="range" min="1" max="5" value="3" style="border:none" id="poly-precision">
+            <input class="form-control" type="range" min="0" max="5" value="3" step="1" style="border:none" id="poly-precision">
           </div>
 
           <h4>Planet Life</h4>
@@ -81,7 +75,7 @@
 
           <div class="form-group">
             <label for="water-size">Water</label>
-            <input class="form-control" type="range" style="border:none" id="water-radius" min="2" max="8" step="0.1" value="3">
+            <input class="form-control" type="range" style="border:none" id="water-radius" min="0.1" max="1" value="0.3" step=".1">
           </div>
 
           <div class="form-group">
@@ -107,79 +101,101 @@
       </div>
 
       <div class="col-md-10 full-height" id="canvas-zone" style="padding: 0px;">
-        <canvas id="canvas-universe" style="width: auto;"></canvas>
+        <canvas id="webgl-canvas"></canvas>
       </div>
 
     </div>
   </div>
 
-  <!-- debug infos is obsolete ! -->
-  <script src="js/gl-matrix-min.js"></script>
-  <script src="js/webGLTools.js"></script>
-  <script src="js/webGLDebug.js"></script>
-  <script src="js/tools.js"></script>
-  <script src="js/Planet.js"></script>
+  <!--
+  WASD : move around <br/>
+  QE : move up and down <br/>
+  YC : rotate camera (you might throw up) <br/>
+  shift : toggle super speed <br/>
+  R : resets camera position to (0, 0, 0) <br/>
+  Use your mouse to look around.
+-->
 
-  <!-- /////////////////\\\\\\\\\\\\\\\\ -->
-  <!-- //////////VERTEX SHADER\\\\\\\\\\ -->
-  <!-- /////////////////\\\\\\\\\\\\\\\\ -->
+
+  <script src="Tools/jquery-3.1.0.min.js"></script>
+  <script src="Tools/gl-matrix-min.js"></script>
+  <script src="Tools/debug/webgl-debug.js"></script>
+  <script src="Tools/webglTools.js"></script>
+  <script src="Tools/Camera.js"></script>
+
+  <script src="InputHandling/KeyboardHandling.js"></script>
+  <script src="InputHandling/mouseMotionHandling.js"></script>
+
+  <script src="Objects/Datas/Drawable.js"></script>
+  <script src="Objects/Datas/Quad.js"></script>
+  <script src="Objects/Datas/Sphere.js"></script>
+  <script src="Objects/Interfaces/DrawableInterface.js"></script>
+  <script src="Objects/Interfaces/QuadInterface.js"></script>
+  <script src="Objects/Interfaces/SphereInterface.js"></script>
+
+  <script src="Views/Scene.js"></script>
+  <script src="Controllers/Controller.js"></script>
+
+  <!-- vertex shader -->
   <script id="shader-vs" type="x-shader/x-vertex">
+
+  //Quad attributes
   attribute vec3 aVertexPosition;
   attribute vec4 aColor;
 
+  //Projection and world rendering
+  attribute vec3 aVertexNormal; // AFL
   uniform mat4 uMVMatrix;
   uniform mat4 uPMatrix;
+  uniform mat3 uNMatrix; // AFL
 
-  // Ajout de matrice de normales
-  uniform mat3 uNMatrix;
+  uniform vec3 uAmbientColor; // AFL
+  uniform vec3 uLightningDirection; // AFL
+  uniform vec3 uDirectionalColor; // AFL
+  uniform bool uUseLighting; // AFL
 
+
+  //Values sent to frag
+  varying vec3 vVertexPos;
   varying vec4 vColor;
 
-  // Ajout vertex normal pour éclairage
-  attribute vec3 aVertexNormal;
-  uniform vec3 uAmbientColor;
-  uniform vec3 uLightingDirection;
-
-  //uniform vec3 uLightingDirection;
-  uniform vec3 uDirectionalColor;
-
-  // Défini l'utilisation de l'éclairage
-  uniform bool uUseLighting;
-  varying vec3 vLightWeighting;
+  //Getting timestamps
+  uniform float uDeltaTime;
+  uniform float uFullTime;
 
   void main(void) {
+    //Setting the values sent to frag
     vColor = aColor;
-    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vVertexPos = aVertexPosition;
 
-    if (!uUseLighting) {
-      vLightWeighting = vec3(1.0, 1.0, 1.0);
-    } else {
-      vec3 transformedNormal = uNMatrix * aVertexNormal;
-      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-      vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-    }
+    //Rendering final positions of vertices in world
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
   }
+
   </script>
 
-  <!-- //////////////////\\\\\\\\\\\\\\\\\ -->
-  <!-- //////////FRAGMENT SHADER\\\\\\\\\\ -->
-  <!-- //////////////////\\\\\\\\\\\\\\\\\ -->
+
+  <!-- fragment shader -->
   <script id="shader-fs" type="x-shader/x-fragment">
   #ifdef GL_ES
   precision highp float;
   #endif
+
+  //Getting variables from vertex shader
   varying vec4 vColor;
-  //attribute vec4 aColor;
-  varying vec3 vLightWeighting;
+
+  //Getting timestamps
+  uniform float uDeltaTime;
+  uniform float uFullTime;
+
+  //camera related
+  uniform vec3 uCameraPosition;
 
   void main(void) {
     gl_FragColor = vColor;
   }
+
   </script>
-  <script src="js/universe.js"></script>
-
-
-  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script> -->
 
 
 </body>

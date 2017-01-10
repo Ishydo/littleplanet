@@ -1,85 +1,53 @@
-var glContext = null;
 var c_width = 0;
 var c_height = 0;
-var prg = null;
 var renderTimer;
 var logicTimer;
+var time;
 
-function degToRad(degrees) {
+function GLTools_degToRad(degrees) {
     return (degrees * Math.PI / 180.0);
 }
 
-/**
- * Allow to initialize Shaders.
- */
-function initShader(id) {
-    var shader, str, script, shaderChild;
-    script = document.getElementById(id);
-    if (!script) throw new BadInitShaderException("can't find shader with id " + id);
-
-    str = "";
-    shaderChild = script.firstChild;
-    while (shaderChild) {
-        if (shaderChild.nodeType == 3) str += shaderChild.textContent;
-        shaderChild = shaderChild.nextSibling;
-    }
-
-    if (script.type == "x-shader/x-fragment") shader = glContext.createShader(glContext.FRAGMENT_SHADER);
-    else if (script.type == "x-shader/x-vertex") shader = glContext.createShader(glContext.VERTEX_SHADER);
-    else throw new BadInitShaderException("Error initShader - shader type is neither vertex or shader, therefore incompatible");
-
-    glContext.shaderSource(shader, str);
-    glContext.compileShader(shader);
-
-    if (!glContext.getShaderParameter(shader, glContext.COMPILE_STATUS)) {
-        throw new BadInitShaderException("Error initShader - shader doesn't compile. " + glContext.getShaderInfoLog(shader));
-    }
-    return shader;
+function GLTools_rnd(range) {
+    return Math.floor(Math.random() * range);
 }
 
-/**
- * The program contains a series of instructions that tell the Graphic Processing Unit (GPU)
- * what to do with every vertex and fragment that we transmit.
- * The vertex shader and the fragment shaders together are called through that program.
- */
-function initProgram() {
-    var fgShader = initShader("shader-fs");
-    var vxShader = initShader("shader-vs");
-
-    prg = glContext.createProgram();
-    glContext.attachShader(prg, vxShader);
-    glContext.attachShader(prg, fgShader);
-    glContext.linkProgram(prg);
-
-    if (!glContext.getProgramParameter(prg, glContext.LINK_STATUS)) throw("Error initProgram - couldn't initialize shaders");
-    glContext.useProgram(prg);
-
-    initShaderParameters(prg);
+function GLTools_extractObjects(args) {
+    var objArgs = {};
+    for (var i = 0; i < args.length; i++) {
+        Object.assign(objArgs, args[i]);
+    }
+    return objArgs;
 }
 
 /**
  * Here we use the fact that requestAnimationFrame is asynchronous to separate the logic from the rendering.
  */
-function renderLoop() {
-    drawScene();
-    renderTimer = requestAnimationFrame(renderLoop);
+function GLTools_renderLoop() {
+    Scene_drawScene();
+    renderTimer = requestAnimationFrame(GLTools_renderLoop);
 }
-function stopRenderLoop() {
+function GLTools_stopRenderLoop() {
     cancelAnimationFrame(renderTimer);
 }
 
-function logicLoop() {
-    updateScene();
-    logicTimer = requestAnimationFrame(logicLoop);
+function GLTools_logicLoop() {
+    var now = new Date().getTime(),
+        dt = now - (time || now);
+    time = now;
+
+    // this.x += 10 * dt; // Increase 'x' by 10 units per millisecond
+    Scene_updateScene(dt);
+    logicTimer = requestAnimationFrame(GLTools_logicLoop);
 }
-function stopLogicLoop() {
+function GLTools_stopLogicLoop() {
     cancelAnimationFrame(logicTimer);
 }
 
 /**
  * Verify that WebGL is supported by your machine
  */
-function getGLContext(canvasName) {
+function GLTools_getGLContext(canvasName) {
     var canvas, gl = null;
     var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
 
@@ -110,6 +78,34 @@ function getGLContext(canvasName) {
     if(glError != "gl.NONE") throw new GlContextError(glError);
 
     return gl;
+}
+
+/**
+ * Allow to initialize Shaders.
+ */
+function GLTools_initShader(id, glContext) {
+    var shader, str, script, shaderChild;
+    script = document.getElementById(id);
+    if (!script) throw new BadInitShaderException("can't find shader with id " + id);
+
+    str = "";
+    shaderChild = script.firstChild;
+    while (shaderChild) {
+        if (shaderChild.nodeType == 3) str += shaderChild.textContent;
+        shaderChild = shaderChild.nextSibling;
+    }
+
+    if (script.type == "x-shader/x-fragment") shader = glContext.createShader(glContext.FRAGMENT_SHADER);
+    else if (script.type == "x-shader/x-vertex") shader = glContext.createShader(glContext.VERTEX_SHADER);
+    else throw new BadInitShaderException("Error GLTools_initShader - shader type is neither vertex or shader, therefore incompatible");
+
+    glContext.shaderSource(shader, str);
+    glContext.compileShader(shader);
+
+    if (!glContext.getShaderParameter(shader, glContext.COMPILE_STATUS)) {
+        throw new BadInitShaderException("Error GLTools_initShader - shader doesn't compile. " + glContext.getShaderInfoLog(shader));
+    }
+    return shader;
 }
 
 /**
@@ -146,9 +142,6 @@ function getArrayBufferWithArray(values) {
     return vBuffer;
 }
 
-function rnd(range) {
-    return Math.floor(Math.random() * range);
-}
 
 /**
  * make it throw an exception.
@@ -180,9 +173,9 @@ function initTextureWithImage(sFilename, texture) {
     c.width = 64;
     c.height = 64;
     var ctx = c.getContext("2d");
-    var red = rnd(256);
-    var green = rnd(256);
-    var blue = rnd(256);
+    var red = GLTools_rnd(256);
+    var green = GLTools_rnd(256);
+    var blue = GLTools_rnd(256);
     ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
 
     ctx.fillRect(0, 0, 64, 64);
