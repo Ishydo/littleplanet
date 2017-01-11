@@ -1,7 +1,3 @@
-/**
-* scene.js - This class handles the whole scene. It contains the initialisation of the gl context, the objects displayed, handles the js interactions on the page and draws the scene
-*/
-
 //Creation of 2 global matrix for the location of the scene (mvMatrix) and for the projection (pMatrix)
 var pMatrix = mat4.create();
 var fullTimeMilliseconds;
@@ -50,8 +46,7 @@ function Scene_updateScene(deltaTime) {
 }
 
 
-
-// Fonction d'update d'une valeur
+// Fonction générique d'interaction
 function updateValue(value, index, field){
 	allDrawables[index][field] = value; // On update la planète (index 0 et sa propriété)
 	console.log("Update planete valeur " + allDrawables[index][field]);

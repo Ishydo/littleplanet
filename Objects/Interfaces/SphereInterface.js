@@ -1,15 +1,11 @@
-/**
-* Created by alexandre on 20.12.2016.
-*/
-
 
 class SphereInterface extends DrawableInterface {
   constructor() {
     super();
     this.indexCnt = 0;
-
   }
 
+  // Remplissage des tableaux
   fillArrays(drawable) {
     this.clearBuffers()
     this.indexCnt = 0;
@@ -78,7 +74,7 @@ class SphereInterface extends DrawableInterface {
 
   createSphere(drawable) {
 
-    //We define the components to draw the base icosahedron, see :
+    // Initialisation d'icosahedron
     //And we take into account the radius of each sphere.
     const X = 0.525731112119133696 * drawable.radius;
     const Z = 0.850650808352039932 * drawable.radius;
@@ -140,13 +136,15 @@ class SphereInterface extends DrawableInterface {
           v3.push(icosahedronvertex[vertexIndexStart],
             icosahedronvertex[vertexIndexStart + 1],
             icosahedronvertex[vertexIndexStart + 2]);
+
+            // La fameuse subdivision selon le nombre souhaité
             this.fromOneToFourTriangles(v1, v2, v3, drawable.divisions, drawable);
           }
 
 
 }
 
-//This method clears the buffer
+// Nettoyage des buffers
 clearBuffers()
 {
   if(this.vertexBuffer != null)

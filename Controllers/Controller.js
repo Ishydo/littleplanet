@@ -1,7 +1,3 @@
-/**
-* Created by alexandre on 28.09.2016.
-*/
-
 var canvasName = 'webgl-canvas';
 var myCanvas;
 var mainCamera = new Camera({pos: vec3.fromValues(.1, 0, 3), front: vec3.fromValues(0.1, 0, -1)});

@@ -1,7 +1,3 @@
-/**
- * Created by alexandre on 28.09.2016.
- */
-
 class DrawableInterface {
     constructor() {
         if (new.target === DrawableInterface) {
@@ -16,25 +12,25 @@ class DrawableInterface {
         mat4.translate(drawable.mvMatrix, drawable.mvMatrix, vec3.fromValues(drawable.x, drawable.y, drawable.z));
     }
 
-    /**
-     * This is where the drawing logic of the children will be
-     */
+    // Fonction qui contiendra la logique de remplissage des buffers pour chaque enfant
     fillArrays() {
         throw TypeError("function fillArrays shouldn't be executed from abstract class DrawableInterface.");
     }
 
+    // Fonction de création
     create(drawable) {
         if(!drawable) throw ReferenceError("Null Drawable cannot be init");
+
+        // Initialisation des tableaux vides
         drawable.vertices = [];
         drawable.colors = [];
         drawable.indices = [];
         drawable.normals = [];
 
+        // Méthode selon enfant de remplissage des tableaux
         this.fillArrays(drawable);
 
-        //console.log(drawable.normals.length, drawable.normals)
-
-        //Converts the values to buffers
+        // Entrée des valeurs dans les buffers
         drawable.vertexBuffer = getVertexBufferWithVertices(drawable.vertices);
         drawable.colorBuffer = getVertexBufferWithVertices(drawable.colors);
         drawable.normalsBuffer = getVertexBufferWithVertices(drawable.normals);

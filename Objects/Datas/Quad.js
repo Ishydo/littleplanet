@@ -1,7 +1,3 @@
-/**
- * Created by alexandre on 21.10.2016.
- */
-
 class Quad extends Drawable {
     constructor(args = {}) {
         super(args);

@@ -3,8 +3,8 @@
  *******************************************************************************/
 
 // this variable will tell if the mouse is being moved while pressing the button
-var rotY = 0; //rotation on the Y-axis (in degrees) 
-var rotX = 0; //rotation on the X-axis (in degrees) 
+var rotY = 0; //rotation on the Y-axis (in degrees)
+var rotX = 0; //rotation on the X-axis (in degrees)
 var dragging = false;
 var oldMousePos = {x: 0, y: 0};
 var rotSpeed = 2.0; //rotation speed
@@ -45,6 +45,7 @@ function MouseHandling_handleMouseUp() {
 
 function rotateModelViewMatrixUsingQuaternion(cam) {
 
+    // TODO: Changer l'effet de la rotation pour tourner les objets sur eux-mêmes
     var rx = GLTools_degToRad(rotX);
     var ry = GLTools_degToRad(rotY);
 

@@ -1,6 +1,3 @@
-/**
- * Created by alexandre on 20.12.2016.
- */
 class Sphere extends Drawable {
     constructor(args = {}) {
         super(args);
