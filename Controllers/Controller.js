@@ -34,14 +34,14 @@ $(function () {
 function m_initDrawables() {
   //allDrawables.push(new Quad({width: 1, height: 1, r: 0.0, g: 0.5, b: 1.0}));
   allDrawables.push(new Sphere({r: 0.0, g: 0.5, b: 0.1}));  // Earth
-  allDrawables.push(new Sphere({r: 0.0, g: 0.0, b: 1.0}));  // Water
+  //allDrawables.push(new Sphere({r: 0.0, g: 0.0, b: 1.0}));  // Water
   //allDrawables.push(new Sphere({r: 1.0, g: 1.0, b: 1.0, radius: 10}));  // Atmosphere
 }
 
 function m_initEventHandling() {
   myCanvas.on("mousedown", MouseHandling_handleMouseDown);
   $(window).on("mouseup",  MouseHandling_handleMouseUp);
-  $(window).on('mousemove',  MouseHandling_handleMouseMove);
+  $(window).on("mousemove",  MouseHandling_handleMouseMove);
 }
 
 /**
@@ -81,12 +81,48 @@ function m_initShaderParameters(prg) {
   prg.colorAttribute 			= glContext.getAttribLocation(prg, "aColor");
   glContext.enableVertexAttribArray(prg.colorAttribute);
 
+  // 2 lines ftl
+  prg.vertexNormalAttribute = glContext.getAttribLocation(prg, "aVertexNormal");
+  glContext.enableVertexAttribArray(prg.vertexNormalAttribute);
+
   prg.pMatrixUniform         = glContext.getUniformLocation(prg, 'uPMatrix');
   prg.mvMatrixUniform        = glContext.getUniformLocation(prg, 'uMVMatrix');
   prg.nMatrixUniform         = glContext.getUniformLocation(prg, 'uNMatrix');
 
   prg.uDeltaTime              = glContext.getUniformLocation(prg, 'uDeltaTime');
   prg.uFullTime               = glContext.getUniformLocation(prg, 'uFullTime');
-
+  prg.uLightningDirection               = glContext.getUniformLocation(prg, 'uLightningDirection');
+  prg.uAmbientColor              = glContext.getUniformLocation(prg, 'uAmbientColor');
+  prg.uDirectionalColor            = glContext.getUniformLocation(prg, 'uDirectionalColor');
+  prg.uUseLightning              = glContext.getUniformLocation(prg, 'uUseLightning');
   prg.uCameraPosition         = glContext.getUniformLocation(prg, 'uCameraPosition');
+
+
+  glContext.uniform3f(
+        prg.uAmbientColor,
+        parseFloat(document.getElementById("ambientR").value),
+        parseFloat(document.getElementById("ambientG").value),
+        parseFloat(document.getElementById("ambientB").value)
+    );
+    var lightingDirection = [
+        parseFloat(document.getElementById("lightDirectionX").value),
+        parseFloat(document.getElementById("lightDirectionY").value),
+        parseFloat(document.getElementById("lightDirectionZ").value)
+    ];
+    /*var adjustedLD = vec3.create();
+    vec3.normalize(lightingDirection, adjustedLD);
+    vec3.scale(adjustedLD, -1);*/
+
+    var adjustedLD = vec3.create();
+    vec3.normalize(adjustedLD, lightingDirection);
+    vec3.scale(adjustedLD, adjustedLD, -1);
+
+    glContext.uniform3fv(prg.uLightningDirection, adjustedLD);
+    glContext.uniform3f(
+        prg.uDirectionalColor,
+        parseFloat(document.getElementById("directionalR").value),
+        parseFloat(document.getElementById("directionalG").value),
+        parseFloat(document.getElementById("directionalB").value)
+    );
+
 }

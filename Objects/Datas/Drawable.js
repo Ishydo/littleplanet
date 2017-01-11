@@ -26,7 +26,7 @@ class Drawable {
         this._vertexBuffer = null;
         this._indexBuffer = null;
         this._colorBuffer = null;
-        this._normalBuffer = null;
+        this._normalsBuffer = null;
         //Initialisation of the arrays used to construct the object
         this._indices = [];
         this._vertices = [];
@@ -35,6 +35,7 @@ class Drawable {
 
         //Creation of a movement matrix specific for the object
         this._mvMatrix = mat4.create();
+        this._nMatrix = mat4.create(); // ftl
 
         if (new.target === Drawable) {
             throw new TypeError("Cannot construct Drawable instances directly (abstract class)");
@@ -67,8 +68,8 @@ class Drawable {
     set indexBuffer     (i)     {this._indexBuffer = i}
     get colorBuffer     ()      {return this._colorBuffer}
     set colorBuffer     (c)     {this._colorBuffer = c}
-    get normalBuffer     ()      {return this._normalBuffer}
-    set normalBuffer     (c)     {this._normalBuffer = c}
+    get normalsBuffer     ()      {return this._normalsBuffer}
+    set normalsBuffer     (c)     {this._normalsBuffer = c}
     get indices         ()      {return this._indices}
     set indices         (i)     {this._indices = i}
     get vertices        ()      {return this._vertices}
@@ -79,6 +80,8 @@ class Drawable {
     set colors          (c)     {this._colors = c}
     get mvMatrix        ()      {return this._mvMatrix}
     set mvMatrix        (m)     {this._mvMatrix = m}
+    get nMatrix        ()      {return this._nMatrix} // ftl
+    set nMatrix        (m)     {this._nMatrix = m} // ftl
 
     getColors   ()  {return {r: this._r, g: this._g, b: this.b, a: this._a}}
     setColors   (...args)  {
@@ -108,8 +111,20 @@ class Drawable {
         mat4.multiply(mvMatrix, parent, this._mvMatrix);
         glContext.uniformMatrix4fv(prg.mvMatrixUniform, false, mvMatrix);
 
+        // These 4 lines ftl
+        mat4.copy(this.nMatrix, this.mvMatrix);
+        mat4.invert(this.nMatrix, this.nMatrix);
+        mat4.transpose(this.nMatrix, this.nMatrix);//We calculate the transposed matrix
+        glContext.uniformMatrix4fv(prg.nMatrixUniform, false, this.nMatrix);//And send it to the gpu
+
+
         glContext.bindBuffer(glContext.ARRAY_BUFFER, this._vertexBuffer);
         glContext.vertexAttribPointer(prg.vertexPositionAttribute, 3, glContext.FLOAT, false, 0, 0);
+
+        glContext.bindBuffer(glContext.ARRAY_BUFFER, this._normalsBuffer);
+        glContext.vertexAttribPointer(prg.vertexNormalAttribute, 3, glContext.FLOAT, false, 0, 0);
+
+
         glContext.bindBuffer(glContext.ARRAY_BUFFER, this._colorBuffer);
         glContext.vertexAttribPointer(prg.colorAttribute, 4, glContext.FLOAT, false, 0, 0);
         glContext.bindBuffer(glContext.ELEMENT_ARRAY_BUFFER, this._indexBuffer);

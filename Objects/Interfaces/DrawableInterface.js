@@ -28,12 +28,16 @@ class DrawableInterface {
         drawable.vertices = [];
         drawable.colors = [];
         drawable.indices = [];
+        drawable.normals = [];
 
         this.fillArrays(drawable);
+
+        //console.log(drawable.normals.length, drawable.normals)
 
         //Converts the values to buffers
         drawable.vertexBuffer = getVertexBufferWithVertices(drawable.vertices);
         drawable.colorBuffer = getVertexBufferWithVertices(drawable.colors);
+        drawable.normalsBuffer = getVertexBufferWithVertices(drawable.normals);
         drawable.indexBuffer = getIndexBufferWithIndices(drawable.indices);
     }
 }

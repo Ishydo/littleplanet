@@ -12,7 +12,7 @@ function Scene_initScene() {
 
 	glContext.viewport(0, 0, glContext.canvas.width, glContext.canvas.height);
 	glContext.enable(glContext.DEPTH_TEST);
-	glContext.clearColor(0.8, 0.8, 0.8, 1.0);
+	//glContext.clearColor(0.8, 0.8, 0.8, 1.0);
 
 	mat4.perspective(pMatrix, GLTools_degToRad(45), c_width / c_height, 0.1, 10000);
 	glContext.uniformMatrix4fv(prg.pMatrixUniform, false, pMatrix);

@@ -6,7 +6,7 @@ class Sphere extends Drawable {
         super(args);
         var {
             radius = 1,
-            divisions = 5
+            divisions = 0
             } = args;
 
         this._radius = radius;

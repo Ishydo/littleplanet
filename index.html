@@ -1,3 +1,4 @@
+<!-- http://stackoverflow.com/questions/38966964/webgl-error-gldrawarrays-attempt-to-access-out-of-range-vertices-in-attribut -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,8 +10,11 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 
   <style>
-  body, html{min-height: 100%; height: 100%; overflow: hidden;}
+  body, html{min-height: 100%; height: 100%;}
   .full-height{height: 100%;}
+  #canvas-zone{
+    background-image: url('./Assets/img/lightroom.jpg');
+  }
   </style>
 </head>
 <body>
@@ -25,178 +29,491 @@
 
         <div class="container">
           <br/>
-          <h1 class="display-4">Tools</h1>
-          <p class="lead">
-            Personalize your little planet here.
-          </p>
-          <hr/>
 
-          <h4>General</h4>
+          <b>Direction:</b>
+          X: <input type="text" id="lightDirectionX" value="0.0" /><br/>
+          Y: <input type="text" id="lightDirectionY" value="0.0" /><br/>
+          Z: <input type="text" id="lightDirectionZ" value="2.0" />
 
-          <div class="form-group">
-            <label for="universe">Background Universe</label>
-            <select class="form-control" id="universe" onchange="updateDebugInfos()">
-              <option value="0">Lightroom</option>
-              <option value="1">Galaxy</option>
-              <option value="2">All Black</option>
-              <option value="3">Blue Sky</option>
-              <option value="4">Grandma's house</option>
-            </select>
+          <b>Colour:</b>
+          R: <input type="text" id="directionalR" value="0.1" /><br/>
+          G: <input type="text" id="directionalG" value="0.1" /><br/>
+          B: <input type="text" id="directionalB" value="0.1" />
+
+
+          <h2>Ambient light:</h2>
+          <table style="border: 0; padding: 10px;">
+            <tr>
+              <td><b>Colour:</b>
+                <td>R: <input type="text" id="ambientR" value="0.5" /><br/>
+                  <td>G: <input type="text" id="ambientG" value="0.5" /><br/>
+                    <td>B: <input type="text" id="ambientB" value="0.9" />
+                    </tr>
+                  </table>
+
+                  <h1 class="display-4">Tools</h1>
+                  <p class="lead">
+                    Personalize your little planet here.
+                  </p>
+                  <hr/>
+
+                  <h4>General</h4>
+
+                  <div class="form-group">
+                    <label for="universe">Background Universe</label>
+                    <select class="form-control" id="universe" onchange="updateBackground(this.value)">
+                      <option value="lightroom">Lightroom</option>
+                      <option value="galaxy">Galaxy</option>
+                      <option value="black">All Black</option>
+                      <option value="grandma">Grandma's house</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="ambiance">General Planet Ambiance</label>
+                    <select class="form-control" id="ambiance">
+                      <option value="0">Earth Like</option>
+                      <option value="1">Desert</option>
+                      <option value="3">Oceanic</option>
+                      <option value="4">Forest</option>
+                    </select>
+                  </div>
+
+                  <h4>Planet Shape</h4>
+
+                  <div class="form-group">
+                    <label for="general-radius">Radius</label>
+                    <input class="form-control" type="range" style="border:none" min="0.1" max="1" value="0.3" step=".1" id="general-radius">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="poly-precision">Level of Details</label>
+                    <input class="form-control" type="range" min="0" max="5" value="3" step="1" style="border:none" id="poly-precision">
+                  </div>
+
+                  <h4>Planet Life</h4>
+
+                  <div class="form-group">
+                    <label for="mountain-size">Mountains</label>
+                    <input class="form-control" type="range" style="border:none" id="mountain-size">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="water-size">Water</label>
+                    <input class="form-control" type="range" style="border:none" id="water-radius" min="0.1" max="1" value="0.3" step=".1">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="trees-concentration">Trees</label>
+                    <input class="form-control" type="range" style="border:none" id="trees-concentration">
+                  </div>
+
+                  <h4>More</h4>
+
+                  <div class="form-group">
+                    <label for="atmosphere-radius">Atmosphere</label>
+                    <input class="form-control" type="range" style="border:none" id="atmosphere-radius" min="2" max="8" value="5">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="clouds-concentration">Clouds</label>
+                    <input class="form-control" type="range" style="border:none" id="clouds-concentration">
+                  </div>
+
+
+                </div>
+
+              </div>
+
+              <div class="col-md-10 full-height" id="canvas-zone" style="padding: 0px;">
+                <canvas id="webgl-canvas"></canvas>
+
+                <button style="z-index: 99; position: relative; right: 10px; bottom: 10;">Save as image</button>
+
+              </div>
+
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="ambiance">General Planet Ambiance</label>
-            <select class="form-control" id="ambiance" onchange="updateDebugInfos()">
-              <option value="0">Earth Like</option>
-              <option value="1">Desert</option>
-              <option value="3">Oceanic</option>
-              <option value="4">Forest</option>
-            </select>
-          </div>
-
-          <h4>Planet Shape</h4>
-
-          <div class="form-group">
-            <label for="general-radius">Radius</label>
-            <input class="form-control" type="range" style="border:none" min="0.1" max="1" value="0.3" step=".1" id="general-radius">
-          </div>
-
-          <div class="form-group">
-            <label for="poly-precision">Level of Details</label>
-            <input class="form-control" type="range" min="0" max="5" value="3" step="1" style="border:none" id="poly-precision">
-          </div>
-
-          <h4>Planet Life</h4>
-
-          <div class="form-group">
-            <label for="mountain-size">Mountains</label>
-            <input class="form-control" type="range" style="border:none" id="mountain-size">
-          </div>
-
-          <div class="form-group">
-            <label for="water-size">Water</label>
-            <input class="form-control" type="range" style="border:none" id="water-radius" min="0.1" max="1" value="0.3" step=".1">
-          </div>
-
-          <div class="form-group">
-            <label for="trees-concentration">Trees</label>
-            <input class="form-control" type="range" style="border:none" id="trees-concentration">
-          </div>
-
-          <h4>More</h4>
-
-          <div class="form-group">
-            <label for="atmosphere-radius">Atmosphere</label>
-            <input class="form-control" type="range" style="border:none" id="atmosphere-radius" min="2" max="8" value="5">
-          </div>
-
-          <div class="form-group">
-            <label for="clouds-concentration">Clouds</label>
-            <input class="form-control" type="range" style="border:none" id="clouds-concentration">
-          </div>
+          <!--
+          WASD : move around <br/>
+          QE : move up and down <br/>
+          YC : rotate camera (you might throw up) <br/>
+          shift : toggle super speed <br/>
+          R : resets camera position to (0, 0, 0) <br/>
+          Use your mouse to look around.
+        -->
 
 
-        </div>
+        <script src="Tools/jquery-3.1.0.min.js"></script>
+        <script src="Tools/gl-matrix-min.js"></script>
+        <script src="Tools/debug/webgl-debug.js"></script>
+        <script src="Tools/webglTools.js"></script>
+        <script src="Tools/Camera.js"></script>
 
-      </div>
+        <script src="InputHandling/KeyboardHandling.js"></script>
+        <script src="InputHandling/mouseMotionHandling.js"></script>
 
-      <div class="col-md-10 full-height" id="canvas-zone" style="padding: 0px;">
-        <canvas id="webgl-canvas"></canvas>
-      </div>
+        <script src="Objects/Datas/Drawable.js"></script>
+        <script src="Objects/Datas/Quad.js"></script>
+        <script src="Objects/Datas/Sphere.js"></script>
+        <script src="Objects/Interfaces/DrawableInterface.js"></script>
+        <script src="Objects/Interfaces/QuadInterface.js"></script>
+        <script src="Objects/Interfaces/SphereInterface.js"></script>
 
-    </div>
-  </div>
+        <script src="Views/Scene.js"></script>
+        <script src="Controllers/Controller.js"></script>
 
-  <!--
-  WASD : move around <br/>
-  QE : move up and down <br/>
-  YC : rotate camera (you might throw up) <br/>
-  shift : toggle super speed <br/>
-  R : resets camera position to (0, 0, 0) <br/>
-  Use your mouse to look around.
--->
-
-
-  <script src="Tools/jquery-3.1.0.min.js"></script>
-  <script src="Tools/gl-matrix-min.js"></script>
-  <script src="Tools/debug/webgl-debug.js"></script>
-  <script src="Tools/webglTools.js"></script>
-  <script src="Tools/Camera.js"></script>
-
-  <script src="InputHandling/KeyboardHandling.js"></script>
-  <script src="InputHandling/mouseMotionHandling.js"></script>
-
-  <script src="Objects/Datas/Drawable.js"></script>
-  <script src="Objects/Datas/Quad.js"></script>
-  <script src="Objects/Datas/Sphere.js"></script>
-  <script src="Objects/Interfaces/DrawableInterface.js"></script>
-  <script src="Objects/Interfaces/QuadInterface.js"></script>
-  <script src="Objects/Interfaces/SphereInterface.js"></script>
-
-  <script src="Views/Scene.js"></script>
-  <script src="Controllers/Controller.js"></script>
-
-  <!-- vertex shader -->
-  <script id="shader-vs" type="x-shader/x-vertex">
-
-  //Quad attributes
-  attribute vec3 aVertexPosition;
-  attribute vec4 aColor;
-
-  //Projection and world rendering
-  attribute vec3 aVertexNormal; // AFL
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  uniform mat3 uNMatrix; // AFL
-
-  uniform vec3 uAmbientColor; // AFL
-  uniform vec3 uLightningDirection; // AFL
-  uniform vec3 uDirectionalColor; // AFL
-  uniform bool uUseLighting; // AFL
+        <script>
+        function updateBackground(bg){
+          $('#webgl-canvas').fadeTo('slow', 0.3, function()
+          {
+            $(this).css('background-image', 'url(./Assets/img/' + bg + '.jpg)');
+          }).fadeTo('slow', 1);
+        }
+        </script>
 
 
-  //Values sent to frag
-  varying vec3 vVertexPos;
-  varying vec4 vColor;
+        <!-- vertex shader -->
+        <script id="shader-vs" type="x-shader/x-vertex">
 
-  //Getting timestamps
-  uniform float uDeltaTime;
-  uniform float uFullTime;
+        //Quad attributes
+        attribute vec3 aVertexPosition;
+        attribute vec4 aColor;
 
-  void main(void) {
-    //Setting the values sent to frag
-    vColor = aColor;
-    vVertexPos = aVertexPosition;
+        // AFL is Added For Light work
 
-    //Rendering final positions of vertices in world
-    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-  }
+        //Projection and world rendering
+        attribute vec3 aVertexNormal; // AFL
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        uniform mat4 uNMatrix; // AFL
 
-  </script>
+        uniform vec3 uAmbientColor; // AFL
+        uniform vec3 uLightningDirection; // AFL
+        uniform vec3 uDirectionalColor; // AFL
+        uniform bool uUseLightning; // AFL
 
+        //Values sent to frag
+        varying vec3 vVertexPos;
+        varying vec4 vColor;
 
-  <!-- fragment shader -->
-  <script id="shader-fs" type="x-shader/x-fragment">
-  #ifdef GL_ES
-  precision highp float;
-  #endif
+        varying vec3 vNormal;
+        varying vec3 vLightWeighting;
 
-  //Getting variables from vertex shader
-  varying vec4 vColor;
-
-  //Getting timestamps
-  uniform float uDeltaTime;
-  uniform float uFullTime;
-
-  //camera related
-  uniform vec3 uCameraPosition;
-
-  void main(void) {
-    gl_FragColor = vColor;
-  }
-
-  </script>
+        //Getting timestamps
+        uniform float uDeltaTime;
+        uniform float uFullTime;
 
 
-</body>
-</html>
+        const float PI = 3.14159;
+
+
+
+
+
+        /***************************************
+        * Mathematical functions for quaternions
+        ****************************************/
+        vec4 quat_from_axis_angle(vec3 axis, float angle)
+        {
+          vec4 qr;
+          float half_angle = (angle * 0.5) * PI / 180.0;
+          qr.x = axis.x * sin(half_angle);
+          qr.y = axis.y * sin(half_angle);
+          qr.z = axis.z * sin(half_angle);
+          qr.w = cos(half_angle);
+          return qr;
+        }
+        vec4 quat_conj(vec4 q)
+        {
+          return vec4(-q.x, -q.y, -q.z, q.w);
+        }
+        vec4 quat_mult(vec4 q1, vec4 q2)
+        {
+          vec4 qr;
+          qr.x = (q1.w * q2.x) + (q1.x * q2.w) + (q1.y * q2.z) - (q1.z * q2.y);
+          qr.y = (q1.w * q2.y) - (q1.x * q2.z) + (q1.y * q2.w) + (q1.z * q2.x);
+          qr.z = (q1.w * q2.z) + (q1.x * q2.y) - (q1.y * q2.x) + (q1.z * q2.w);
+          qr.w = (q1.w * q2.w) - (q1.x * q2.x) - (q1.y * q2.y) - (q1.z * q2.z);
+          return qr;
+        }
+        vec3 rotate_vertex_position(vec3 position, vec3 axis, float angle)
+        {
+          vec4 qr = quat_from_axis_angle(axis, angle);
+          vec4 qr_conj = quat_conj(qr);
+          vec4 q_pos = vec4(position.x, position.y, position.z, 0);
+
+          vec4 q_tmp = quat_mult(qr, q_pos);
+          qr = quat_mult(q_tmp, qr_conj);
+
+          return vec3(qr.x, qr.y, qr.z);
+        }
+        /***********************************
+        * End of Mathematical functions for quaternions
+        ************************************/
+
+        // ASHIMA
+
+        vec3 mod289(vec3 x)
+        {
+          return x - floor(x * (1.0 / 289.0)) * 289.0;
+        }
+
+        vec4 mod289(vec4 x)
+        {
+          return x - floor(x * (1.0 / 289.0)) * 289.0;
+        }
+
+        vec4 permute(vec4 x)
+        {
+          return mod289(((x*34.0)+1.0)*x);
+        }
+
+        vec4 taylorInvSqrt(vec4 r)
+        {
+          return 1.79284291400159 - 0.85373472095314 * r;
+        }
+
+        vec3 fade(vec3 t) {
+          return t*t*t*(t*(t*6.0-15.0)+10.0);
+        }
+
+        // Classic Perlin noise
+        float cnoise(vec3 P)
+        {
+          vec3 Pi0 = floor(P); // Integer part for indexing
+          vec3 Pi1 = Pi0 + vec3(1.0); // Integer part + 1
+          Pi0 = mod289(Pi0);
+          Pi1 = mod289(Pi1);
+          vec3 Pf0 = fract(P); // Fractional part for interpolation
+          vec3 Pf1 = Pf0 - vec3(1.0); // Fractional part - 1.0
+          vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
+          vec4 iy = vec4(Pi0.yy, Pi1.yy);
+          vec4 iz0 = Pi0.zzzz;
+          vec4 iz1 = Pi1.zzzz;
+
+          vec4 ixy = permute(permute(ix) + iy);
+          vec4 ixy0 = permute(ixy + iz0);
+          vec4 ixy1 = permute(ixy + iz1);
+
+          vec4 gx0 = ixy0 * (1.0 / 7.0);
+          vec4 gy0 = fract(floor(gx0) * (1.0 / 7.0)) - 0.5;
+          gx0 = fract(gx0);
+          vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
+          vec4 sz0 = step(gz0, vec4(0.0));
+          gx0 -= sz0 * (step(0.0, gx0) - 0.5);
+          gy0 -= sz0 * (step(0.0, gy0) - 0.5);
+
+          vec4 gx1 = ixy1 * (1.0 / 7.0);
+          vec4 gy1 = fract(floor(gx1) * (1.0 / 7.0)) - 0.5;
+          gx1 = fract(gx1);
+          vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
+          vec4 sz1 = step(gz1, vec4(0.0));
+          gx1 -= sz1 * (step(0.0, gx1) - 0.5);
+          gy1 -= sz1 * (step(0.0, gy1) - 0.5);
+
+          vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
+          vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
+          vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
+          vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
+          vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
+          vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
+          vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
+          vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
+
+          vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g010, g010), dot(g100, g100), dot(g110, g110)));
+          g000 *= norm0.x;
+          g010 *= norm0.y;
+          g100 *= norm0.z;
+          g110 *= norm0.w;
+          vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g011, g011), dot(g101, g101), dot(g111, g111)));
+          g001 *= norm1.x;
+          g011 *= norm1.y;
+          g101 *= norm1.z;
+          g111 *= norm1.w;
+
+          float n000 = dot(g000, Pf0);
+          float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
+          float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
+          float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
+          float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
+          float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
+          float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
+          float n111 = dot(g111, Pf1);
+
+          vec3 fade_xyz = fade(Pf0);
+          vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
+          vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
+          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
+          return 2.2 * n_xyz;
+        }
+
+        // Classic Perlin noise, periodic variant
+        float pnoise(vec3 P, vec3 rep)
+        {
+          vec3 Pi0 = mod(floor(P), rep); // Integer part, modulo period
+          vec3 Pi1 = mod(Pi0 + vec3(1.0), rep); // Integer part + 1, mod period
+          Pi0 = mod289(Pi0);
+          Pi1 = mod289(Pi1);
+          vec3 Pf0 = fract(P); // Fractional part for interpolation
+          vec3 Pf1 = Pf0 - vec3(1.0); // Fractional part - 1.0
+          vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
+          vec4 iy = vec4(Pi0.yy, Pi1.yy);
+          vec4 iz0 = Pi0.zzzz;
+          vec4 iz1 = Pi1.zzzz;
+
+          vec4 ixy = permute(permute(ix) + iy);
+          vec4 ixy0 = permute(ixy + iz0);
+          vec4 ixy1 = permute(ixy + iz1);
+
+          vec4 gx0 = ixy0 * (1.0 / 7.0);
+          vec4 gy0 = fract(floor(gx0) * (1.0 / 7.0)) - 0.5;
+          gx0 = fract(gx0);
+          vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
+          vec4 sz0 = step(gz0, vec4(0.0));
+          gx0 -= sz0 * (step(0.0, gx0) - 0.5);
+          gy0 -= sz0 * (step(0.0, gy0) - 0.5);
+
+          vec4 gx1 = ixy1 * (1.0 / 7.0);
+          vec4 gy1 = fract(floor(gx1) * (1.0 / 7.0)) - 0.5;
+          gx1 = fract(gx1);
+          vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
+          vec4 sz1 = step(gz1, vec4(0.0));
+          gx1 -= sz1 * (step(0.0, gx1) - 0.5);
+          gy1 -= sz1 * (step(0.0, gy1) - 0.5);
+
+          vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
+          vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
+          vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
+          vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
+          vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
+          vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
+          vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
+          vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
+
+          vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g010, g010), dot(g100, g100), dot(g110, g110)));
+          g000 *= norm0.x;
+          g010 *= norm0.y;
+          g100 *= norm0.z;
+          g110 *= norm0.w;
+          vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g011, g011), dot(g101, g101), dot(g111, g111)));
+          g001 *= norm1.x;
+          g011 *= norm1.y;
+          g101 *= norm1.z;
+          g111 *= norm1.w;
+
+          float n000 = dot(g000, Pf0);
+          float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
+          float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
+          float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
+          float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
+          float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
+          float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
+          float n111 = dot(g111, Pf1);
+
+          vec3 fade_xyz = fade(Pf0);
+          vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
+          vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
+          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
+          return 2.2 * n_xyz;
+        }
+
+
+
+
+
+
+
+
+
+        // NOISE GENERATION
+        varying float noise;
+
+        float turbulence( vec3 p ) {
+          float w = 100.0;
+          float t = -.5;
+          for (float f = 1.0 ; f <= 10.0 ; f++ ){
+            float power = pow( 4.5, f );
+            t += abs( pnoise( vec3( power * p ), vec3( 10.0, 10.0, 10.0 ) ) / power );
+          }
+          return t;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        void main(void) {
+          //Setting the values sent to frag
+          vColor = aColor;
+          vVertexPos = aVertexPosition;
+
+          //Handle the planet rotation on itself on y axis, (*) Make it work !
+          //vec3 vertex = rotate_vertex_position(aVertexPosition, vec3(0.0, 1.0, 0.0), rotation * 360.0);
+
+          //Handle the inclination of the earth on it's axis, (*) Make it work !
+          //  vec3 position = rotate_vertex_position(vertex * radius, vec3(1.0, 0.0, 0.0), 90.0 - inclination);
+          vec3 position = aVertexPosition;
+
+          vNormal = normalize(vec3(uNMatrix * vec4(aVertexNormal, 1.0)));
+
+          // get a turbulent 3d noise using the normal, normal to high freq
+          noise = 10.0 *  -.10 * turbulence( .5 * vNormal );
+          // get a 3d noise using the position, low frequency
+          float b = 5.0 * pnoise( 0.05 * position, vec3( 100.0 ) );
+          // compose both noises
+          float displacement = - 4. * noise + b;
+
+          vec3 newPosition = position + vNormal * displacement;
+
+
+
+          // Ftl
+          vec3 transformedNormal = vNormal;
+          float directionalLightWeighting = max(dot(transformedNormal, uLightningDirection), 0.0);
+          vLightWeighting = vNormal; // Here pass normal instead of light color
+
+          //Rendering final positions of vertices in world
+          gl_Position = uPMatrix * uMVMatrix * vec4(newPosition, 1.0);
+        }
+
+        </script>
+
+
+        <!-- fragment shader -->
+        <script id="shader-fs" type="x-shader/x-fragment">
+        #ifdef GL_ES
+        precision highp float;
+        #endif
+
+        //Getting variables from vertex shader
+        varying vec4 vColor;
+
+        //Getting timestamps
+        uniform float uDeltaTime;
+        uniform float uFullTime;
+
+        //camera related
+        uniform vec3 uCameraPosition;
+        varying vec3 vLightWeighting;
+
+        void main(void) {
+          //gl_FragColor = vec4(vColor.rgb * vLightWeighting, 1.0);
+          gl_FragColor = vec4(vLightWeighting, 1.0);
+
+        }
+
+        </script>
+
+
+      </body>
+      </html>
