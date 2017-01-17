@@ -7,6 +7,7 @@
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,800" rel="stylesheet">
+  <link rel="stylesheet" href="./css/font-awesome.min.css">
 
   <style>
   body, html{min-height: 100%; height: 100%; overflow: hidden;}
@@ -534,25 +535,6 @@
           <input type="range" id="second-sphere-radius" value="0" min="-5" max="5" step="0.01" onchange="updateValue(this.value, 1, 'y')" style="border:none;" />
         </div>
 
-
-
-        <div class="col-md-12">
-          <h3>Secondary Sphere Settings</h3>
-          <label for="main-sphere-subdivision">Secondary Sphere Subdivisions</label>
-          <input type="range" id="second-sphere-subdivision" value="0" min="0" max="3" step="1" onchange="updateValue(this.value, 1, 'subdivision')" style="border:none;" />
-        </div>
-        <div class="col-md-12">
-          <label for="main-sphere-subdivision">Secondary Sphere Radius</label>
-          <input type="range" id="second-sphere-radius" value="0.3" min="0.3" max="2.3" step="0.01" onchange="updateValue(this.value, 1, 'radius')" style="border:none;" />
-        </div>
-        <div class="col-md-12">
-          <label for="main-sphere-subdivision">Secondary Sphere X-offset</label>
-          <input type="range" id="second-sphere-radius" value="0" min="-5" max="5" step="0.01" onchange="updateValue(this.value, 1, 'x')" style="border:none;" />
-        </div>
-        <div class="col-md-12">
-          <label for="main-sphere-subdivision">Secondary Sphere Y-offset</label>
-          <input type="range" id="second-sphere-radius" value="0" min="-5" max="5" step="0.01" onchange="updateValue(this.value, 1, 'y')" style="border:none;" />
-        </div>
 
       </div>
       <div class="col-md-9 full-height" id="gl-container" style="padding: 0;">

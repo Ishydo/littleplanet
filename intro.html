@@ -5,6 +5,7 @@
   <title>My Little Planet</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,800" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./css/font-awesome.min.css">
   <style>
   body{font-family: 'Open Sans';color: #ecf0f1; background-image: url('./Assets/img/starsblack.jpg');}
   h1{font-weight: 800;font-size: 6em;letter-spacing: -6px;margin-bottom: 0.2em;}
@@ -13,7 +14,7 @@
   </style>
 </head>
 <body>
- <img src="./Assets/planete.png" class="positioned" />
+  <img src="./Assets/planete.png" class="positioned" />
   <div class="container text-center" style="margin-top: 15%;">
     <div class="col-md-8 col-md-offset-2">
       <h1>My Little Planet.</h1>
@@ -25,13 +26,94 @@
         </p>
         <br/>
         <div class="col-md-4 col-md-offset-2">
-          <a class="btn btn-lg btn-danger btn-block" href="./index.html">START</a>
+          <a class="btn btn-lg btn-danger btn-block" href="./littleplanet.html" style="padding: 20px; font-weight: 800;"><i class="fa fa-globe"></i>&nbsp;START</a>
         </div>
         <div class="col-md-4">
-          <a class="btn btn-lg btn-primary btn-block">ABOUT</a>
+          <a class="btn btn-lg btn-primary btn-block" data-toggle="modal" data-target=".bs-example-modal-lg" style="padding: 20px; font-weight: 800;"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;ABOUT</a>
         </div>
       </div>
     </div>
   </div>
+
+
+  <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content" style="color: #555">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel"><b>About My Little Planet</b></h4>
+        </div>
+        <div class="modal-body">
+
+          <h2>A moment of interaction</h2>
+
+          <p>
+            A simple little planet editor for you to have fun for at least
+            10 minutes. Do not forget to share your creations with your friends and be
+            creative ! By the way, it is about playing with a few spheres, their radius,
+            textures and a wonderful Perlin noise.
+          </p>
+
+          <h2>Technically</h2>
+
+          <p>
+          It is all about interactions with the interface. There are two "encapsulated" spheres.
+          The main one and the secondary one. You can play and interact with them by using the inputs
+          and settings on the left side of the screen.
+          </p>
+
+          <p>
+          The interactive values are the following for the main sphere :
+          </p>
+
+          <ul>
+            <li>Sphere subdivisions</li>
+            <li>Sphere radius</li>
+            <li>Sphere offset-X</li>
+            <li>Sphere offset-Y</li>
+            <li>Perlin Noise High Frequency turbulence factor</li>
+            <li>Perlin Noise Low Frequency turbulence factor</li>
+          </ul>
+
+
+
+          <h2>Inspiration</h2>
+
+          <p>
+            Honestly, it is a school project and I played Little Big Planet a few weeks ago.
+            I do not really like the game but the idea of micro planets made me smile. That's why.
+          </p>
+
+          <p>
+            I tried to approach the <i>low-poly style</i> (because oh yeah I love it) by blocking
+            the maximum subdivision values so the spheres cannot look perfectly smooth.
+          </p>
+
+          <p>
+            Another very complete work of that kind was made before by <a href="http://oscarwestberg.github.io/webgl/index.html">Oscar Westberg</a>
+          </p>
+
+          <p>
+            This project is a full webgl project, no treejs.
+          </p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
 </body>
 </html>
