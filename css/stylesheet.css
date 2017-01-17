@@ -1,0 +1,108 @@
+/**
+ * Global CSS
+ * By Johan Chavaillaz
+ */
+
+body {
+	font-family: 'Open Sans', Arial, serif;
+	background-color: #FFFFFF;
+	font-size: 1em;
+	margin: 0px;
+	padding: 0px 0px 25px 0px;
+}
+
+p{
+ margin: 10px;	
+}
+
+header {
+	margin: 0px;
+	padding: 20px 0px;
+	background-color: #3E6392;
+	color: white;
+}
+
+section { 
+	margin: 0px auto;
+	width: 1000px;
+}
+
+h1 {
+	margin: 0px;
+}
+
+h2 {
+	clear: both;
+	position: relative; 
+	margin-top: 2em;
+	margin-bottom: 0.5em; 
+	font-size:1.5em; 
+	font-weight: bold; 
+	text-transform: uppercase;
+	color: #3E6392;
+}
+/*
+h2:before { 
+	content: ""; 
+	position:absolute; 
+	top: 50%; 
+	left: 0; 
+	width: 100%; 
+	border-bottom: 4px solid #3E6392; 
+}
+*/
+h2 span { 
+	position:relative; 
+	display: inline-block; 
+	padding-right: 1.4em; 
+	background: #fff; 
+}
+
+h3 img {
+	vertical-align:middle;
+	margin: 0px 5px;
+}
+
+canvas {
+	border: 0px solid #000000;
+	background-color: #EEEEEE;
+	margin: 10px auto;
+}
+
+.illustration {
+	width: 325px;
+	text-align: center;
+}
+
+.details {
+	width: 600px;
+	position: relative; 
+	padding: 20px 25px; 
+	background: #ffffff; 
+	border: 3px solid #dce4ed; 
+	border-radius: 6px;
+}
+
+.details:after,
+.details:before {
+ 	right: 100%; 
+	top: 50%; 
+	border: solid transparent; 
+	content: " "; 
+	height: 0; 
+	width: 0; 
+	position: absolute; 
+	pointer-events: none;
+}
+
+.details:after {
+ 	border-right-color: #ffffff; 
+	border-width: 10px; 
+	margin-top: -10px;
+}
+
+.details:before {
+ 	border-right-color: #dce4ed; 
+ 	border-width: 15px; 
+	margin-top: -15px;
+}
