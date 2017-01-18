@@ -215,3 +215,31 @@ function updateTexture(value, index){
 	}
 
 }
+
+/**
+* Fonction de sauvegarde de l'état de la planète dans le localstorage
+*/
+function saveState(){
+
+	// On clear le localstorage
+	localStorage.clear();
+
+	// On stocke toute la config
+	localStorage.bg = $("#universe").val()
+	localStorage.pn_hf = $("#perlin-hf-turb").val()
+	localStorage.pn_lf = $("#perlin-lf-turb").val()
+	localStorage.sat_mode = "Smith";
+	localStorage.sat_tex = $("#sat-tex").val()
+	localStorage.wire_mode = "Smith";
+	localStorage.s1_tex = $("#main-texture").val();
+	localStorage.s1_sub = $("#main-sphere-subdivision").val();
+	localStorage.s1_rad = $("#main-sphere-radius").val();
+	localStorage.s1_x_off = $("#main-sphere-x-offset").val();
+	localStorage.s1_y_off = $("#main-sphere-y-offset").val();
+
+	localStorage.s2_tex = $("#second-texture").val();;
+	localStorage.s2_sub = $("#second-sphere-subdivision").val();
+	localStorage.s2_rad = $("#second-sphere-radius").val();
+	localStorage.s2_x_off = $("#second-sphere-x-offset").val();
+	localStorage.s2_y_off = $("#second-sphere-y-offset").val();
+}
