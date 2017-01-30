@@ -20,7 +20,6 @@ class Orbit
 
 		//Defines a variable to handle the T (time) of the orbit
 		this.T = 0;
-		console.log("Base tick : " + this.T);
 
 	}
 

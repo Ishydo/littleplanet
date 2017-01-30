@@ -39,8 +39,6 @@
   <script src="./js/scene.js"></script>
 
 
-
-
   <!-- vertex shader -->
   <script id="shader-vs" type="x-shader/x-vertex">
   //Constant for light orientation & Pi
@@ -64,12 +62,11 @@
   uniform float uHighFrequencyTurbulence;
   uniform float uLowFrequencyTurbulence;
 
-
   varying vec3 vLightpos;
   varying vec2 vTextureCoord;
   varying vec4 vPosition;
   varying mat3 tbn;
-
+  varying float noise;
 
 
   /***************************************
@@ -113,8 +110,10 @@
   * End of Mathematical functions for quaternions
   ************************************/
 
-  // ASHIMA
-
+  /**
+  * Fonctions mathématiques pour la génération du bruit de Perlin
+  *
+  */
   vec3 mod289(vec3 x)
   {
     return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -210,9 +209,13 @@
   }
 
 
-  // NOISE GENERATION
-  varying float noise;
 
+
+
+  /**
+  * Création des turbulences
+  *
+  */
   float turbulence( vec3 p ) {
     float w = 100.0;
     float t = -.5;
@@ -277,9 +280,6 @@
         //vec3 newPosition = position + normal * displacement;
         vec3 newPosition = vertex * radius * displacement;
         // Il a fallu changer le signe du displcement !
-
-        //Calculate the position in space of the current point
-        //vPosition = uMVMatrix * vec4(newPosition, 1.0);
 
         //Calculate the position in space of the current point
         vPosition = uMVMatrix * vec4(newPosition, 1.0);
@@ -519,8 +519,8 @@
 
         <div style="position:absolute; padding: 20px; z-index:99;">
           <button class="btn btn-default btn-sm" onclick="saveState()"><span class="glyphicon glyphicon-check" aria-hidden="true" id="save-state-btn"></span>&nbsp;Save state</button>
-          <button class="btn btn-default btn-sm"><span class="glyphicon glyphicon-picture" aria-hidden="true" id="save-img-btn"></span>&nbsp;Save as image</button>
-          <button class="btn btn-default btn-sm" onclick="window.location.reload();"><span class="glyphicon glyphicon-remove" aria-hidden="true" id="reset-btn"></span>&nbsp;Reset</button>
+          <button class="btn btn-default btn-sm" onclick="saveAsImage()"><span class="glyphicon glyphicon-picture" aria-hidden="true" id="save-img-btn"></span>&nbsp;Save as image</button>
+          <button class="btn btn-default btn-sm" onclick="localStorage.clear(); window.location.reload();"><span class="glyphicon glyphicon-remove" aria-hidden="true" id="reset-btn"></span>&nbsp;Reset</button>
         </div>
 
         <!-- webgl canvas -->
@@ -552,8 +552,8 @@
     * Fonction de sauvegarde en tant qu'image
     */
     function saveAsImage(){
-      var image = $("#webgl-canvas").toDataURL("image/png");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
-      $.redirect("./image.php",{ imga: "galaxy", imgb: image});
+      var image = ($("#webgl-canvas")[0]).toDataURL("image/png");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
+      $.redirect("./image.php",{ imga: $("#universe").val(), imgb: image});
     }
 
 
@@ -595,6 +595,12 @@
         updateValue(localStorage.s2_x_off, 1, "x")
         updateValue(localStorage.s2_y_off, 1, "y")
 
+        if(localStorage.sat_mode == "false"){
+          $("#satellites_mode").toggleClass("active");
+        }
+        if(localStorage.wire_mode == "true"){
+          $("#wireframe_mode").toggleClass("active");
+        }
     }
 
     // S'il y a un localstorage

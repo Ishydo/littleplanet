@@ -111,9 +111,9 @@ function initScene()
 	var mainSphere = new Planet("Earth", mainRadius, mainSub, 1.0, 0.0,0.0,-8.0, earthTextureTab[0], 0);
 	var secondarySphere = new Planet("Water", secRadius, secSub, 0.0, 0.0,0.0,-8.0, waterTextureTab[0], 0);
 
-	var satellite1 = new Planet("Cloud", 0.2, 0, 1.0, 0.0,0.0,-8.0, cloudTextureTab[0], 0);
-	var satellite2 = new Planet("Cloud", 0.2, 0, 1.0, 0.0,0.0,-8.0, cloudTextureTab[0], 0);
-	var satellite3 = new Planet("Cloud", 0.2, 0, 1.0, 0.0,0.0,-8.0, cloudTextureTab[0], 0);
+	var satellite1 = new Planet("Cloud", 0.2, 2, 1.0, 0.0,0.0,-8.0, cloudTextureTab[0], 0);
+	var satellite2 = new Planet("Cloud", 0.2, 2, 1.0, 0.0,0.0,-8.0, cloudTextureTab[0], 0);
+	var satellite3 = new Planet("Cloud", 0.2, 2, 1.0, 0.0,0.0,-8.0, cloudTextureTab[0], 0);
 
 	sceneObjects.push(mainSphere);
 	sceneObjects.push(secondarySphere);
@@ -228,9 +228,9 @@ function saveState(){
 	localStorage.bg = $("#universe").val()
 	localStorage.pn_hf = $("#perlin-hf-turb").val()
 	localStorage.pn_lf = $("#perlin-lf-turb").val()
-	localStorage.sat_mode = "Smith";
+	localStorage.sat_mode = $("#satellites_mode").hasClass("active");
 	localStorage.sat_tex = $("#sat-tex").val()
-	localStorage.wire_mode = "Smith";
+	localStorage.wire_mode = $("#wireframe_mode").hasClass("active");
 	localStorage.s1_tex = $("#main-texture").val();
 	localStorage.s1_sub = $("#main-sphere-subdivision").val();
 	localStorage.s1_rad = $("#main-sphere-radius").val();
